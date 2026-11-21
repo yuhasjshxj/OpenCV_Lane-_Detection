@@ -9,17 +9,18 @@ scale = 640 / img.shape[1]
 img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
 h, w = img.shape[:2]
 
-# 2~4단계
+# 2~4단계 (앞에서 확인한 것과 동일)
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 blur = cv2.GaussianBlur(gray, (5, 5), 0)
 edges = cv2.Canny(blur, 50, 150)
 
-# 5단계: ROI 사다리꼴
+# 5단계: ROI 사다리꼴 (비율 기준, 임시 값)
+y_top, y_bot = int(0.76 * h), int(0.94 * h)
 roi_pts = np.array([[
-    (int(0.00 * w), int(0.92 * h)),   # 왼쪽 아래 (보닛 위쪽까지임)
-    (int(0.40 * w), int(0.52 * h)),   # 왼쪽 위
-    (int(0.58 * w), int(0.52 * h)),   # 오른쪽 위
-    (int(0.90 * w), int(0.92 * h)),   # 오른쪽 아래
+    (int(0.32 * w), y_bot),           # 왼쪽 아래 (보닛 위쪽까지)
+    (int(0.45 * w), y_top),           # 왼쪽 위
+    (int(0.63 * w), y_top),           # 오른쪽 위
+    (int(0.86 * w), y_bot),          # 오른쪽 아래
 ]], dtype=np.int32)
 
 mask = np.zeros_like(edges)
