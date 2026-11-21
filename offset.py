@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 
-#@@@@@@임시 파라미터 (이 이미지 기준, 카메라 확정 후 재조정)@@@@@@
-LEFT_SLOPE = (-1.5, -0.3)    # 왼쪽 차선 기울기 범위
-RIGHT_SLOPE = (0.8, 1.5)     # 오른쪽 차선 기울기 범위
+# ---- 임시 파라미터 (새 영상 사진 기준, 카메라 확정 후 재조정) ----
+LEFT_SLOPE = (-1.3, -0.65)   # 왼쪽 차선 기울기 범위
+RIGHT_SLOPE = (0.35, 0.8)    # 오른쪽 차선 기울기 범위
 HFOV_DEG = 70.0              # 가로 시야각 가정값 (캘리브레이션 후 초점거리로 교체)
-
+# ------------------------------------------------------------
 
 img = cv2.imread("images/lane_test.jpg")
 if img is None:
@@ -22,13 +22,14 @@ blur = cv2.GaussianBlur(gray, (5, 5), 0)
 edges = cv2.Canny(blur, 50, 150)
 
 # 5단계: ROI
-y_top, y_bot = int(0.52 * h), int(0.92 * h)
+y_top, y_bot = int(0.76 * h), int(0.94 * h)
 roi_pts = np.array([[
-    (int(0.00 * w), y_bot),
-    (int(0.40 * w), y_top),
-    (int(0.58 * w), y_top),
-    (int(0.90 * w), y_bot),
+    (int(0.32 * w), y_bot),
+    (int(0.45 * w), y_top),
+    (int(0.63 * w), y_top),
+    (int(0.86 * w), y_bot),
 ]], dtype=np.int32)
+
 mask = np.zeros_like(edges)
 cv2.fillPoly(mask, roi_pts, 255)
 roi_edges = cv2.bitwise_and(edges, mask)
