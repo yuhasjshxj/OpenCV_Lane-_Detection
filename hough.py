@@ -9,17 +9,19 @@ scale = 640 / img.shape[1]
 img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
 h, w = img.shape[:2]
 
-# 2~5단계
+# 2~5단계 (앞에서 확인한 것과 동일)
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 blur = cv2.GaussianBlur(gray, (5, 5), 0)
 edges = cv2.Canny(blur, 50, 150)
 
+y_top, y_bot = int(0.76 * h), int(0.94 * h)
 roi_pts = np.array([[
-    (int(0.00 * w), int(0.92 * h)),
-    (int(0.40 * w), int(0.52 * h)),
-    (int(0.58 * w), int(0.52 * h)),
-    (int(0.90 * w), int(0.92 * h)),
+    (int(0.32 * w), y_bot),
+    (int(0.45 * w), y_top),
+    (int(0.63 * w), y_top),
+    (int(0.86 * w), y_bot),
 ]], dtype=np.int32)
+
 mask = np.zeros_like(edges)
 cv2.fillPoly(mask, roi_pts, 255)
 roi_edges = cv2.bitwise_and(edges, mask)
@@ -47,10 +49,10 @@ else:
         x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
         dx, dy = x2 - x1, y2 - y1
         if dx == 0:
-            continue                      # 수직선은 기울기 계산 불가, 일단 잠시 제외
-        slope = dy / dx                   # 이미지 좌표 기준 (y가 아래로 증가임)
+            continue                      # 수직선은 기울기 계산 불가, 일단 제외
+        slope = dy / dx                   # 이미지 좌표 기준 (y가 아래로 증가)
         length = float(np.hypot(dx, dy))
-        color = (255, 0, 0) if slope < 0 else (0, 0, 255)   # 파랑=음수, 빨강=양수
+        color = (255, 0, 0) if slope < 0 else (0, 0, 255)   # BGR: 파랑=음수, 빨강=양수
         cv2.line(overlay, (x1, y1), (x2, y2), color, 2)
         rows.append((slope, length, x1, y1, x2, y2))
 
